@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Los Guillenes Chat</title>
+  <link rel="icon" href="assets/guillenfavicon.ico" type="image/x-icon">
+  <style>
+    /* Estilos CSS para la animación del mensaje y otros estilos */
+    /* Tus estilos CSS anteriores aquí */
+
+    /* Cambiar el tipo de letra del título y colocarlo mejor */
+    #title {
+      margin-top: 50px;
+      text-align: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: white;
+    }
+
+    /* Estilos para el fondo degradado */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom, #262626, #000000); /* Cambiar los colores según tu preferencia */
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Estilos para el contenedor principal */
+    #container {
+      width: 600px;
+      margin-top: 20px;
+      padding: 40px;
+      background-color: rgba(0, 0, 0, 0.8); /* Fondo semi-transparente */
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.3); /* Sombra blanca */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Estilos para los campos de usuario y mensaje */
+    #form input,
+    #form select {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+      margin-right: 10px; /* Espacio entre campos */
+      background-color: rgba(255, 255, 255, 0.95); /* Fondo semi-transparente */
+    }
+
+    #form input:first-child {
+      margin-right: 10px;
+    }
+
+    /* Estilos para el botón de enviar */
+    #form button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007bff; /* Color azul */
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    /* Estilos para los mensajes */
+    #messages {
+      width: 100%;
+      max-height: 300px;
+      overflow-y: auto;
+      list-style-type: none;
+      padding: 0;
+      margin: 20px 0;
+    }
+
+    #messages li {
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 5px;
+      animation: messageAnimation 0.5s ease;
+      background-color: rgba(255, 255, 255, 0.9); /* Fondo semi-transparente */
+      box-shadow: 0 0 5px rgba(255, 255, 255, 0.1); /* Sombra blanca */
+    }
+
+    @keyframes messageAnimation {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    #messages li:nth-child(odd) {
+      background-color: rgba(255, 255, 255, 0.7); /* Fondo semi-transparente */
+    }
+
+    /* Estilos para el texto en la esquina inferior derecha */
+    #version {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1 id="title">Los Guillenes Chat</h1>
+  <div id="container">
+    <ul id="messages"></ul>
+    <form id="form" action="">
+      <!-- Utilizamos un elemento <select> para el nombre -->
+      <select id="username" required>
+        <option value="">¿Quién soy?</option>
+        <option value="gringo de los cojones">gringo de los cojones</option>
+        <option value="calvo solitario">calvo solitario</option>
+        <option value="ruth.pkt">ruth.pkt</option>
+        <option value="el listo (en decadencia)">el listo (en decadencia)</option>
+        <option value="perra exclusive">perra exclusive</option>
+        <option value="aran san san">aran san san</option>
+        <option value="el coletas (ya no)">el coletas (ya no)</option>
+        <option value="rumano.">rumano.</option>
+      </select>
+      <input id="m" placeholder="Mensaje" autocomplete="off" required />
+      <button>Enviar</button>
+    </form>
+  </div>
+
+  <!-- Texto en la esquina inferior derecha -->
+  <div id="version">GuillenChat V.1.4</div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    // Conexión con el servidor de Socket.io
+    const socket = io();
+
+    // Obtener referencias de elementos DOM
+    const form = document.getElementById('form');
+    const inputMessage = document.getElementById('m');
+    const selectUsername = document.getElementById('username');
+    const messages = document.getElementById('messages');
+
+    // Función para hacer scroll hacia abajo automáticamente
+    function scrollToBottom() {
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    // Manejar el envío del formulario
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      if (inputMessage.value && selectUsername.value) {
+        const message = `${selectUsername.value}: ${inputMessage.value}`;
+        socket.emit('chat message', message); // Enviar el mensaje al servidor
+        inputMessage.value = '';
+        scrollToBottom(); // Desplazar hacia abajo automáticamente
+      }
+    });
+
+    // Manejar la escritura del usuario
+    inputMessage.addEventListener('input', function() {
+      if (inputMessage.value && selectUsername.value) {
+        socket.emit('typing', true); // Usuario está escribiendo
+      } else {
+        socket.emit('typing', false); // Usuario dejó de escribir
+      }
+    });
+
+    // Manejar la recepción de un nuevo mensaje
+    socket.on('chat message', function(msg) {
+      const item = document.createElement('li');
+      item.textContent = msg;
+      item.classList.add('message'); // Agregar la clase 'message' para la animación
+      messages.appendChild(item); // Cambiar 'prepend' por 'appendChild'
+      scrollToBottom(); // Llamar a la función para hacer scroll hacia abajo automáticamente
+    });
+
+    // Mostrar quién está escribiendo
+    socket.on('typing', function(typingMessage) {
+      document.getElementById('typing').textContent = typingMessage;
+    });
+  </script>
+</body>
+</html>

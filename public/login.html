@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Los Guillenes Chat</title>
+  <link rel="icon" href="assets/guillenfavicon.ico" type="image/x-icon">
+  <style>
+    /* Estilos CSS para la animación del mensaje y otros estilos */
+    /* Tus estilos CSS anteriores aquí */
+    
+    /* Cambiar el tipo de letra del título y colocarlo mejor */
+    #title {
+      margin-top: 50px;
+      text-align: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: white;
+    }
+    
+    /* Estilos para el fondo degradado */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom, #262626, #000000); /* Cambiar los colores según tu preferencia */
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    /* Estilos para el contenedor principal */
+    #container {
+      width: 600px;
+      margin-top: 20px;
+      padding: 40px;
+      background-color: rgba(0, 0, 0, 0.8); /* Fondo semi-transparente */
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.3); /* Sombra blanca */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    /* Estilos para los campos de usuario y contraseña */
+    #login-form input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+      margin-bottom: 10px;
+      background-color: rgba(255, 255, 255, 0.95); /* Fondo semi-transparente */
+    }
+    
+    /* Estilos para el botón de enviar */
+    #login-form button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007bff; /* Color azul */
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #version {
+     position: fixed;
+     bottom: 10px;
+     right: 10px;
+     color: white; /* Cambiar el color del texto a blanco */
+   }
+
+    
+    /* Estilos para los mensajes de error */
+    #error-message {
+      color: red;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1 id="title">Acceso al chat privado</h1>
+  <div id="container">
+    <form id="login-form" action="/login" method="POST">
+      <input type="password" id="password" name="password" placeholder="Contraseña" autocomplete="off" required />
+      <button type="submit">Ingresar</button>
+      <div id="error-message"></div>
+    </form>    
+  </div>
+
+  <!-- Texto en la esquina inferior derecha -->
+  <div id="version">GuillenChat V.1.4 (login window beta)</div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    // Conexión con el servidor de Socket.io
+    const socket = io();
+    
+    // Obtener referencia al formulario de inicio de sesión y al campo de contraseña
+    const loginForm = document.getElementById('login-form');
+    const passwordInput = document.getElementById('password');
+    const errorMessage = document.getElementById('error-message');
+    
+    // Manejar el envío del formulario de inicio de sesión
+    loginForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      // Validar la contraseña
+      if (passwordInput.value === 'habibi') { // Cambia 'tu_contraseña_secreta' por tu contraseña real
+        // Si la contraseña es correcta, redirecciona al chat
+        window.location.href = '/chat.html';
+      } else {
+        // Si la contraseña es incorrecta, mostrar mensaje de error
+        errorMessage.textContent = 'Acceso denegado';
+      }
+    });
+  </script>
+</body>
+</html>
