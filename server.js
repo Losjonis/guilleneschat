@@ -11,6 +11,7 @@ const io = socketIo(server);
 
 const messageLogFile = 'messages.log'; // Nombre del archivo de registro de mensajes
 const bannedIPs = ['192.168.13.52', '192.168.11.88', '192.168.12.139']; // Lista de IP baneadas
+const typingUsers = new Set(); // Conjunto para rastrear usuarios escribiendo
 
 // Generar un ID de sesión único al iniciar el servidor
 const sessionId = uuidv4();
@@ -36,6 +37,11 @@ function clearMessages(sessionId) {
     const sessionLogPath = path.join(__dirname, logFolder, sessionLogFilename);
 
     try {
+        // Crear la carpeta si no existe
+        if (!fs.existsSync(logFolder)) {
+            fs.mkdirSync(logFolder, { recursive: true });
+        }
+        
         // Guardar los mensajes en el nuevo archivo de registro
         fs.writeFileSync(sessionLogPath, fs.readFileSync(messageLogFile, 'utf8'));
         console.log(`Mensajes guardados en el archivo de registro de la sesión: ${sessionLogFilename}`);
@@ -108,16 +114,58 @@ io.on('connection', (socket) => {
 
     // Manejar la señal 'typing'
     socket.on('typing', (isTyping) => {
+        const username = socket.handshake.query.username;
+        
         if (isTyping) {
-            // Si está escribiendo, emitir la señal a todos los clientes
-            io.emit('typing', socket.handshake.query.username + ' está escribiendo...');
+            // Agregar usuario al conjunto de usuarios escribiendo
+            typingUsers.add(username);
         } else {
-            // Si deja de escribir, emitir la señal vacía a todos los clientes
-            io.emit('typing', '');
+            // Quitar usuario del conjunto de usuarios escribiendo
+            typingUsers.delete(username);
         }
+        
+        // Crear el mensaje basado en cuántos usuarios están escribiendo
+        let typingMessage = '';
+        if (typingUsers.size > 0) {
+            const typingArray = Array.from(typingUsers);
+            if (typingArray.length === 1) {
+                typingMessage = `${typingArray[0]} está escribiendo...`;
+            } else if (typingArray.length === 2) {
+                typingMessage = `${typingArray[0]} y ${typingArray[1]} están escribiendo...`;
+            } else {
+                // Para 3 o más usuarios
+                const lastUser = typingArray.pop();
+                typingMessage = `${typingArray.join(', ')} y ${lastUser} están escribiendo...`;
+            }
+        }
+        
+        // Emitir el mensaje a todos los clientes
+        io.emit('typing', typingMessage);
     });
 
     socket.on('disconnect', () => {
+        const username = socket.handshake.query.username;
+        // Limpiar el usuario del conjunto de typing cuando se desconecta
+        typingUsers.delete(username);
+        
+        // Actualizar el mensaje de typing después de eliminar al usuario
+        let typingMessage = '';
+        if (typingUsers.size > 0) {
+            const typingArray = Array.from(typingUsers);
+            if (typingArray.length === 1) {
+                typingMessage = `${typingArray[0]} está escribiendo...`;
+            } else if (typingArray.length === 2) {
+                typingMessage = `${typingArray[0]} y ${typingArray[1]} están escribiendo...`;
+            } else {
+                // Para 3 o más usuarios
+                const lastUser = typingArray.pop();
+                typingMessage = `${typingArray.join(', ')} y ${lastUser} están escribiendo...`;
+            }
+        }
+        
+        // Emitir el mensaje actualizado
+        io.emit('typing', typingMessage);
+        
         console.log(`Usuario desconectado - IP: ${clientIP}`);
     });
 });
