@@ -3,116 +3,527 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Los Guillenes Chat</title>
+  <title>Los Guillenes Chat - Acceso</title>
   <link rel="icon" href="assets/guillenfavicon.ico" type="image/x-icon">
   <style>
-    /* Estilos CSS para la animación del mensaje y otros estilos */
-    /* Tus estilos CSS anteriores aquí */
-    
-    /* Cambiar el tipo de letra del título y colocarlo mejor */
-    #title {
-      margin-top: 50px;
-      text-align: center;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: white;
-    }
-    
-    /* Estilos para el fondo degradado */
-    body {
-      font-family: Arial, sans-serif;
+    * {
       margin: 0;
       padding: 0;
-      background: linear-gradient(to bottom, #262626, #000000); /* Cambiar los colores según tu preferencia */
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
     }
-    
-    /* Estilos para el contenedor principal */
-    #container {
-      width: 600px;
-      margin-top: 20px;
-      padding: 40px;
-      background-color: rgba(0, 0, 0, 0.8); /* Fondo semi-transparente */
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(255, 255, 255, 0.3); /* Sombra blanca */
+
+    /* Animated background elements */
+    body::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+      background-size: 50px 50px;
+      animation: float 20s infinite linear;
+    }
+
+    @keyframes float {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      position: relative;
+      z-index: 1;
+    }
+
+    .login-header {
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      color: white;
+      padding: 40px 30px 30px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { transform: rotate(0deg); }
+      50% { transform: rotate(180deg); }
+    }
+
+    .login-icon {
+      width: 80px;
+      height: 80px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
       display: flex;
-      flex-direction: column;
       align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      position: relative;
+      z-index: 1;
     }
-    
-    /* Estilos para los campos de usuario y contraseña */
-    #login-form input {
-      flex: 1;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 16px;
-      margin-bottom: 10px;
-      background-color: rgba(255, 255, 255, 0.95); /* Fondo semi-transparente */
+
+    .login-icon svg {
+      width: 40px;
+      height: 40px;
+      fill: white;
     }
-    
-    /* Estilos para el botón de enviar */
-    #login-form button {
-      padding: 10px 20px;
+
+    .login-title {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .login-subtitle {
       font-size: 16px;
-      background-color: #007bff; /* Color azul */
+      opacity: 0.9;
+      position: relative;
+      z-index: 1;
+    }
+
+    .login-form {
+      padding: 40px 30px;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #374151;
+      font-size: 14px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 16px 20px;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      font-size: 16px;
+      background: #f9fafb;
+      color: #374151;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #6366f1;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .form-input::placeholder {
+      color: #9ca3af;
+    }
+
+    .login-button {
+      width: 100%;
+      padding: 16px 24px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
       cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+      position: relative;
+      overflow: hidden;
     }
 
-    #version {
-     position: fixed;
-     bottom: 10px;
-     right: 10px;
-     color: white; /* Cambiar el color del texto a blanco */
-   }
+    .login-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
 
-    
-    /* Estilos para los mensajes de error */
-    #error-message {
-      color: red;
-      margin-bottom: 10px;
+    .login-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+    }
+
+    .login-button:hover::before {
+      left: 100%;
+    }
+
+    .login-button:active {
+      transform: translateY(0);
+    }
+
+    .login-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .error-message {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-top: 16px;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: all 0.3s ease;
+    }
+
+    .error-message.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .success-message {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #16a34a;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-top: 16px;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: all 0.3s ease;
+    }
+
+    .success-message.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .version-info {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      backdrop-filter: blur(10px);
+    }
+
+    .security-notice {
+      text-align: center;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #e5e7eb;
+      color: #6b7280;
+      font-size: 13px;
+    }
+
+    .security-icon {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .security-icon svg {
+      width: 16px;
+      height: 16px;
+      fill: #10b981;
+    }
+
+    /* Loading animation */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 8px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Input focus effects */
+    .input-container {
+      position: relative;
+    }
+
+    .input-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 12px;
+      padding: 2px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask-composite: exclude;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .form-input:focus + .input-container::before {
+      opacity: 1;
+    }
+
+    /* Responsive design */
+    @media (max-width: 480px) {
+      body {
+        padding: 16px;
+      }
+      
+      .login-container {
+        border-radius: 16px;
+      }
+      
+      .login-header {
+        padding: 30px 20px 20px;
+      }
+      
+      .login-form {
+        padding: 30px 20px;
+      }
+      
+      .login-title {
+        font-size: 24px;
+      }
+      
+      .login-subtitle {
+        font-size: 14px;
+      }
+    }
+
+    /* Accessibility improvements */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
     }
   </style>
 </head>
 <body>
-  <h1 id="title">Acceso al chat privado</h1>
-  <div id="container">
-    <form id="login-form" action="/login" method="POST">
-      <input type="password" id="password" name="password" placeholder="Contraseña" autocomplete="off" required />
-      <button type="submit">Ingresar</button>
-      <div id="error-message"></div>
-    </form>    
+  <div class="login-container">
+    <div class="login-header">
+      <h1 class="login-title">Guillenes Chat</h1>
+      <p class="login-subtitle">Acceso al chat privado</p>
+    </div>
+
+    <form class="login-form" id="loginForm">
+      <div class="form-group">
+        <label class="form-label" for="password">Contraseña de acceso</label>
+        <div class="input-container">
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            class="form-input" 
+            placeholder="Introduce la contraseña..." 
+            autocomplete="current-password"
+            required
+          />
+        </div>
+      </div>
+
+      <button type="submit" class="login-button" id="loginButton">
+        <span id="buttonText">Acceder al Chat</span>
+      </button>
+
+      <div id="errorMessage" class="error-message"></div>
+      <div id="successMessage" class="success-message"></div>
+
+      <div class="security-notice">
+        <div class="security-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z"/>
+          </svg>
+          Conexión segura
+        </div>
+        <p>Tu información está protegida</p>
+      </div>
+    </form>
   </div>
 
-  <!-- Texto en la esquina inferior derecha -->
-  <div id="version">GuillenChat V.1.4 (login window beta)</div>
+  <div class="version-info">GuillenChat V.2.0 - Modern Edition</div>
 
-  <script src="/socket.io/socket.io.js"></script>
   <script>
-    // Conexión con el servidor de Socket.io
-    const socket = io();
-    
-    // Obtener referencia al formulario de inicio de sesión y al campo de contraseña
-    const loginForm = document.getElementById('login-form');
+    const loginForm = document.getElementById('loginForm');
     const passwordInput = document.getElementById('password');
-    const errorMessage = document.getElementById('error-message');
-    
-    // Manejar el envío del formulario de inicio de sesión
-    loginForm.addEventListener('submit', function(e) {
+    const loginButton = document.getElementById('loginButton');
+    const buttonText = document.getElementById('buttonText');
+    const errorMessage = document.getElementById('errorMessage');
+    const successMessage = document.getElementById('successMessage');
+
+    let isSubmitting = false;
+
+    // Handle form submission
+    loginForm.addEventListener('submit', async function(e) {
       e.preventDefault();
-      // Validar la contraseña
-      if (passwordInput.value === 'habibi') { // Cambia 'tu_contraseña_secreta' por tu contraseña real
-        // Si la contraseña es correcta, redirecciona al chat
-        window.location.href = '/chat.html';
+      
+      if (isSubmitting) return;
+      
+      const password = passwordInput.value.trim();
+      
+      if (!password) {
+        showError('Por favor, introduce la contraseña');
+        return;
+      }
+      
+      // Start loading state
+      setLoadingState(true);
+      
+      try {
+        // Send POST request to server
+        const response = await fetch('/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ password: password })
+        });
+
+        if (response.ok) {
+          // Check if we're being redirected
+          if (response.redirected || response.url.includes('/chat')) {
+            showSuccess('¡Acceso concedido! Redirigiendo...');
+            setTimeout(() => {
+              window.location.href = './chat';
+            }, 1000);
+          } else {
+            // Success but no redirect, manually redirect
+            showSuccess('¡Acceso concedido! Redirigiendo...');
+            setTimeout(() => {
+              window.location.href = './chat';
+            }, 1000);
+          }
+        } else {
+          // Handle error response
+          const errorText = await response.text();
+          showError('Contraseña incorrecta');
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        showError('Error de conexión. Inténtalo de nuevo.');
+      } finally {
+        setLoadingState(false);
+      }
+    });
+
+    // Handle Enter key
+    passwordInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        loginForm.dispatchEvent(new Event('submit'));
+      }
+    });
+
+    // Clear messages when typing
+    passwordInput.addEventListener('input', function() {
+      hideMessages();
+    });
+
+    function setLoadingState(loading) {
+      isSubmitting = loading;
+      loginButton.disabled = loading;
+      
+      if (loading) {
+        buttonText.innerHTML = '<div class="loading"></div>Verificando...';
       } else {
-        // Si la contraseña es incorrecta, mostrar mensaje de error
-        errorMessage.textContent = 'Acceso denegado';
+        buttonText.textContent = 'Acceder al Chat';
+      }
+    }
+
+    function showError(message) {
+      hideMessages();
+      errorMessage.textContent = message;
+      errorMessage.classList.add('show');
+      
+      // Shake animation for the input
+      passwordInput.style.animation = 'none';
+      setTimeout(() => {
+        passwordInput.style.animation = 'shake 0.5s ease-in-out';
+      }, 10);
+    }
+
+    function showSuccess(message) {
+      hideMessages();
+      successMessage.textContent = message;
+      successMessage.classList.add('show');
+    }
+
+    function hideMessages() {
+      errorMessage.classList.remove('show');
+      successMessage.classList.remove('show');
+    }
+
+    // Add shake animation CSS
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+        20%, 40%, 60%, 80% { transform: translateX(10px); }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Focus password input on load
+    window.addEventListener('load', () => {
+      passwordInput.focus();
+    });
+
+    // Add some visual feedback for the password strength (optional)
+    passwordInput.addEventListener('input', function() {
+      const value = this.value;
+      if (value.length > 0) {
+        this.style.borderColor = value === 'habibi' ? '#10b981' : '#6366f1';
+      } else {
+        this.style.borderColor = '#e5e7eb';
       }
     });
   </script>
