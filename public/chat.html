@@ -6,181 +6,681 @@
   <title>Los Guillenes Chat</title>
   <link rel="icon" href="assets/guillenfavicon.ico" type="image/x-icon">
   <style>
-    /* Estilos CSS para la animación del mensaje y otros estilos */
-    /* Tus estilos CSS anteriores aquí */
-
-    /* Cambiar el tipo de letra del título y colocarlo mejor */
-    #title {
-      margin-top: 50px;
-      text-align: center;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: white;
-    }
-
-    /* Estilos para el fondo degradado */
-    body {
-      font-family: Arial, sans-serif;
+    * {
       margin: 0;
       padding: 0;
-      background: linear-gradient(to bottom, #262626, #000000); /* Cambiar los colores según tu preferencia */
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .chat-container {
+      width: 100%;
+      max-width: 900px;
+      height: 80vh;
+      max-height: 700px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .chat-header {
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      color: white;
+      padding: 20px 30px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .chat-header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { transform: rotate(0deg); }
+      50% { transform: rotate(180deg); }
+    }
+
+    .chat-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 5px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .chat-subtitle {
+      font-size: 14px;
+      opacity: 0.8;
+      position: relative;
+      z-index: 1;
+    }
+
+    .online-indicator {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 1;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+
+    .messages-container {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      background: linear-gradient(to bottom, #f8fafc, #f1f5f9);
+      position: relative;
+    }
+
+    .messages-container::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .messages-container::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .messages-container::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 3px;
+    }
+
+    .message {
+      margin-bottom: 16px;
+      animation: messageSlideIn 0.4s ease-out;
+      opacity: 0;
+      animation-fill-mode: forwards;
+    }
+
+    @keyframes messageSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .message-bubble {
+      background: white;
+      padding: 12px 16px;
+      border-radius: 18px;
+      max-width: 70%;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      position: relative;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .message-bubble::before {
+      content: '';
+      position: absolute;
+      left: -8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 6px 8px 6px 0;
+      border-color: transparent white transparent transparent;
+    }
+
+    .message-author {
+      font-weight: 600;
+      font-size: 12px;
+      color: #6366f1;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .message-text {
+      color: #374151;
+      line-height: 1.5;
+      word-wrap: break-word;
+    }
+
+    .message-time {
+      font-size: 10px;
+      color: #9ca3af;
+      margin-top: 4px;
+      text-align: right;
+    }
+
+    .typing-indicator {
+      padding: 10px 20px;
+      font-style: italic;
+      color: #6b7280;
+      min-height: 20px;
+      display: flex;
+      align-items: center;
+    }
+
+    .typing-dots {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-left: 8px;
+    }
+
+    .typing-dots span {
+      width: 4px;
+      height: 4px;
+      background: #6b7280;
+      border-radius: 50%;
+      animation: typing 1.4s infinite ease-in-out;
+    }
+
+    .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+    .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+    @keyframes typing {
+      0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+      40% { transform: scale(1.2); opacity: 1; }
+    }
+
+    .input-area {
+      padding: 20px;
+      background: white;
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .user-selector {
+      margin-bottom: 16px;
+    }
+
+    .user-selector select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      font-size: 14px;
+      background: white;
+      color: #374151;
+      transition: all 0.2s;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+      background-position: right 12px center;
+      background-repeat: no-repeat;
+      background-size: 16px;
+      padding-right: 40px;
+    }
+
+    .user-selector select:focus {
+      outline: none;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    .message-form {
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+    }
+
+    .message-input {
+      flex: 1;
+      min-height: 44px;
+      max-height: 120px;
+      padding: 12px 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      font-size: 14px;
+      font-family: inherit;
+      resize: none;
+      transition: all 0.2s;
+      background: #f9fafb;
+    }
+
+    .message-input:focus {
+      outline: none;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+      background: white;
+    }
+
+    .send-button {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border: none;
+      border-radius: 12px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+
+    .send-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+    }
+
+    .send-button:active {
+      transform: translateY(0);
+    }
+
+    .send-button svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .version-info {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      backdrop-filter: blur(10px);
+    }
+
+    .empty-state {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      height: 100%;
+      color: #9ca3af;
+      text-align: center;
     }
 
-    /* Estilos para el contenedor principal */
-    #container {
-      width: 600px;
-      margin-top: 20px;
-      padding: 40px;
-      background-color: rgba(0, 0, 0, 0.8); /* Fondo semi-transparente */
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(255, 255, 255, 0.3); /* Sombra blanca */
-      display: flex;
-      flex-direction: column;
+    .empty-state svg {
+      width: 64px;
+      height: 64px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    .connection-status {
+      display: inline-flex;
       align-items: center;
+      gap: 8px;
+      font-size: 12px;
     }
 
-    /* Estilos para los campos de usuario y mensaje */
-    #form input,
-    #form select {
-      flex: 1;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 16px;
-      margin-right: 10px; /* Espacio entre campos */
-      background-color: rgba(255, 255, 255, 0.95); /* Fondo semi-transparente */
+    .connection-status.connected .status-dot {
+      background: #10b981;
     }
 
-    #form input:first-child {
-      margin-right: 10px;
+    .connection-status.disconnected .status-dot {
+      background: #ef4444;
     }
 
-    /* Estilos para el botón de enviar */
-    #form button {
-      padding: 10px 20px;
-      font-size: 16px;
-      background-color: #007bff; /* Color azul */
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    /* Estilos para los mensajes */
-    #messages {
-      width: 100%;
-      max-height: 300px;
-      overflow-y: auto;
-      list-style-type: none;
-      padding: 0;
-      margin: 20px 0;
-    }
-
-    #messages li {
-      padding: 10px;
-      border-radius: 10px;
-      margin-bottom: 5px;
-      animation: messageAnimation 0.5s ease;
-      background-color: rgba(255, 255, 255, 0.9); /* Fondo semi-transparente */
-      box-shadow: 0 0 5px rgba(255, 255, 255, 0.1); /* Sombra blanca */
-    }
-
-    @keyframes messageAnimation {
-      0% { opacity: 0; transform: translateY(20px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-
-    #messages li:nth-child(odd) {
-      background-color: rgba(255, 255, 255, 0.7); /* Fondo semi-transparente */
-    }
-
-    /* Estilos para el texto en la esquina inferior derecha */
-    #version {
-      position: fixed;
-      bottom: 10px;
-      right: 10px;
-      color: white;
+    /* Responsive design */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+      
+      .chat-container {
+        height: 90vh;
+        border-radius: 16px;
+      }
+      
+      .chat-header {
+        padding: 16px 20px;
+      }
+      
+      .chat-title {
+        font-size: 20px;
+      }
+      
+      .messages-container {
+        padding: 16px;
+      }
+      
+      .input-area {
+        padding: 16px;
+      }
+      
+      .message-form {
+        flex-direction: column;
+        gap: 8px;
+      }
+      
+      .send-button {
+        width: 100%;
+        height: 48px;
+      }
     }
   </style>
 </head>
 <body>
-  <h1 id="title">Los Guillenes Chat</h1>
-  <div id="container">
-    <ul id="messages"></ul>
-    <form id="form" action="">
-      <!-- Utilizamos un elemento <select> para el nombre -->
-      <select id="username" required>
-        <option value="">¿Quién soy?</option>
-        <option value="gringo de los cojones">gringo de los cojones</option>
-        <option value="calvo solitario">calvo solitario</option>
-        <option value="ruth.pkt">ruth.pkt</option>
-        <option value="el listo (en decadencia)">el listo (en decadencia)</option>
-        <option value="perra exclusive">perra exclusive</option>
-        <option value="aran san san">aran san san</option>
-        <option value="el coletas (ya no)">el coletas (ya no)</option>
-        <option value="rumano.">rumano.</option>
-      </select>
-      <input id="m" placeholder="Mensaje" autocomplete="off" required />
-      <button>Enviar</button>
-    </form>
+  <div class="chat-container">
+    <div class="chat-header">
+      <div class="chat-title">Los Guillenes Chat</div>
+      <div class="chat-subtitle">Conectados y listos para conversar</div>
+      <div class="online-indicator">
+        <div class="connection-status connected" id="connectionStatus">
+          <span class="status-dot"></span>
+          <span>En línea</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="messages-container" id="messagesContainer">
+      <div class="empty-state" id="emptyState">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+        </svg>
+        <h3>¡Bienvenido al chat!</h3>
+        <p>Selecciona tu nombre y comienza a conversar</p>
+      </div>
+      <div id="messages"></div>
+    </div>
+
+    <div class="typing-indicator" id="typingIndicator"></div>
+
+    <div class="input-area">
+      <div class="user-selector">
+        <select id="username" required>
+          <option value="">¿Quién soy?</option>
+          <option value="gringo de los cojones">gringo de los cojones</option>
+          <option value="calvo solitario">calvo solitario</option>
+          <option value="ruth.pkt">ruth.pkt</option>
+          <option value="el listo (en decadencia)">el listo (en decadencia)</option>
+          <option value="perra exclusive">perra exclusive</option>
+          <option value="aran san san">aran san san</option>
+          <option value="el coletas (ya no)">el coletas (ya no)</option>
+          <option value="rumano.">rumano.</option>
+        </select>
+      </div>
+
+      <form class="message-form" id="messageForm">
+        <textarea 
+          id="messageInput" 
+          class="message-input" 
+          placeholder="Escribe tu mensaje..." 
+          rows="1"
+          required>
+        </textarea>
+        <button type="submit" class="send-button">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+          </svg>
+        </button>
+      </form>
+    </div>
   </div>
 
-  <!-- Texto en la esquina inferior derecha -->
-  <div id="version">GuillenChat V.1.4</div>
+  <div class="version-info">GuillenChat V.2.0 - Modern Edition</div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    // Conexión con el servidor de Socket.io
-    const socket = io();
-
-    // Obtener referencias de elementos DOM
-    const form = document.getElementById('form');
-    const inputMessage = document.getElementById('m');
-    const selectUsername = document.getElementById('username');
+    // DOM elements
+    const messagesContainer = document.getElementById('messagesContainer');
     const messages = document.getElementById('messages');
+    const messageForm = document.getElementById('messageForm');
+    const messageInput = document.getElementById('messageInput');
+    const usernameSelect = document.getElementById('username');
+    const typingIndicator = document.getElementById('typingIndicator');
+    const connectionStatus = document.getElementById('connectionStatus');
+    const emptyState = document.getElementById('emptyState');
 
-    // Función para hacer scroll hacia abajo automáticamente
-    function scrollToBottom() {
-      messages.scrollTop = messages.scrollHeight;
+    let socket = null;
+    let isTyping = false;
+    let typingTimeout;
+    let currentUsername = '';
+
+    // Initialize socket connection when username is selected
+    function initializeSocket() {
+      if (socket) {
+        socket.disconnect();
+      }
+      
+      // Connection with Socket.io server with username in query
+      socket = io({
+        query: {
+          username: currentUsername
+        }
+      });
+
+      // Handle new messages
+      socket.on('chat message', function(msg) {
+        // Hide empty state
+        emptyState.style.display = 'none';
+        
+        const messageElement = createMessageElement(msg);
+        messages.appendChild(messageElement);
+        
+        // Trigger animation
+        setTimeout(() => {
+          messageElement.style.opacity = '1';
+          messageElement.style.transform = 'translateY(0) scale(1)';
+        }, 50);
+        
+        scrollToBottom();
+      });
+
+      // Handle typing indicator
+      socket.on('typing', function(typingMessage) {
+        if (typingMessage) {
+          typingIndicator.innerHTML = `
+            <span>${typingMessage}</span>
+            <div class="typing-dots">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          `;
+          typingIndicator.style.opacity = '1';
+        } else {
+          typingIndicator.style.opacity = '0';
+          setTimeout(() => {
+            if (typingIndicator.style.opacity === '0') {
+              typingIndicator.innerHTML = '';
+            }
+          }, 200);
+        }
+        scrollToBottom();
+      });
+
+      // Connection status handlers
+      socket.on('connect', function() {
+        connectionStatus.className = 'connection-status connected';
+        connectionStatus.innerHTML = '<span class="status-dot"></span><span>En línea</span>';
+      });
+
+      socket.on('disconnect', function() {
+        connectionStatus.className = 'connection-status disconnected';
+        connectionStatus.innerHTML = '<span class="status-dot"></span><span>Desconectado</span>';
+      });
     }
 
-    // Manejar el envío del formulario
-    form.addEventListener('submit', function(e) {
+    // Auto-resize textarea
+    messageInput.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    });
+
+    // Handle form submission
+    messageForm.addEventListener('submit', function(e) {
       e.preventDefault();
-      if (inputMessage.value && selectUsername.value) {
-        const message = `${selectUsername.value}: ${inputMessage.value}`;
-        socket.emit('chat message', message); // Enviar el mensaje al servidor
-        inputMessage.value = '';
-        scrollToBottom(); // Desplazar hacia abajo automáticamente
+      if (messageInput.value.trim() && usernameSelect.value && socket) {
+        const message = `${usernameSelect.value}: ${messageInput.value.trim()}`;
+        socket.emit('chat message', message);
+        messageInput.value = '';
+        messageInput.style.height = 'auto';
+        stopTyping();
       }
     });
 
-    // Manejar la escritura del usuario
-    inputMessage.addEventListener('input', function() {
-      if (inputMessage.value && selectUsername.value) {
-        socket.emit('typing', true); // Usuario está escribiendo
+    // Handle typing
+    messageInput.addEventListener('input', function() {
+      if (this.value.trim() && usernameSelect.value && socket && !isTyping) {
+        startTyping();
+      } else if (!this.value.trim() && isTyping) {
+        stopTyping();
+      }
+      
+      // Reset typing timeout
+      clearTimeout(typingTimeout);
+      typingTimeout = setTimeout(() => {
+        if (isTyping) {
+          stopTyping();
+        }
+      }, 1000);
+    });
+
+    function startTyping() {
+      if (socket) {
+        isTyping = true;
+        socket.emit('typing', true);
+      }
+    }
+
+    function stopTyping() {
+      if (socket) {
+        isTyping = false;
+        socket.emit('typing', false);
+      }
+    }
+
+    // Handle Enter key (Shift+Enter for new line)
+    messageInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        messageForm.dispatchEvent(new Event('submit'));
+      }
+    });
+
+    // Scroll to bottom function
+    function scrollToBottom() {
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    // Format time
+    function formatTime() {
+      return new Date().toLocaleTimeString('es-ES', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+    }
+
+    // Create message element
+    function createMessageElement(messageText) {
+      const [author, ...textParts] = messageText.split(': ');
+      const text = textParts.join(': ');
+      
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'message';
+      
+      messageDiv.innerHTML = `
+        <div class="message-bubble">
+          <div class="message-author">${author}</div>
+          <div class="message-text">${text}</div>
+          <div class="message-time">${formatTime()}</div>
+        </div>
+      `;
+      
+      return messageDiv;
+    }
+
+    // Focus message input when username is selected
+    usernameSelect.addEventListener('change', function() {
+      if (this.value) {
+        currentUsername = this.value;
+        initializeSocket();
+        messageInput.focus();
+      }
+    });
+
+    // Handle new messages (moved from inside initializeSocket)
+    function handleChatMessage(msg) {
+      // Hide empty state
+      emptyState.style.display = 'none';
+      
+      const messageElement = createMessageElement(msg);
+      messages.appendChild(messageElement);
+      
+      // Trigger animation
+      setTimeout(() => {
+        messageElement.style.opacity = '1';
+        messageElement.style.transform = 'translateY(0) scale(1)';
+      }, 50);
+      
+      scrollToBottom();
+    }
+
+    // Handle typing indicator (moved from inside initializeSocket)
+    function handleTyping(typingMessage) {
+      if (typingMessage) {
+        typingIndicator.innerHTML = `
+          <span>${typingMessage}</span>
+          <div class="typing-dots">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        `;
+        typingIndicator.style.opacity = '1';
       } else {
-        socket.emit('typing', false); // Usuario dejó de escribir
+        typingIndicator.style.opacity = '0';
+        setTimeout(() => {
+          if (typingIndicator.style.opacity === '0') {
+            typingIndicator.innerHTML = '';
+          }
+        }, 200);
       }
-    });
+      scrollToBottom();
+    }
 
-    // Manejar la recepción de un nuevo mensaje
-    socket.on('chat message', function(msg) {
-      const item = document.createElement('li');
-      item.textContent = msg;
-      item.classList.add('message'); // Agregar la clase 'message' para la animación
-      messages.appendChild(item); // Cambiar 'prepend' por 'appendChild'
-      scrollToBottom(); // Llamar a la función para hacer scroll hacia abajo automáticamente
-    });
+    // Handle connection status (moved from inside initializeSocket)  
+    function handleConnect() {
+      connectionStatus.className = 'connection-status connected';
+      connectionStatus.innerHTML = '<span class="status-dot"></span><span>En línea</span>';
+    }
 
-    // Mostrar quién está escribiendo
-    socket.on('typing', function(typingMessage) {
-      document.getElementById('typing').textContent = typingMessage;
-    });
+    function handleDisconnect() {
+      connectionStatus.className = 'connection-status disconnected';  
+      connectionStatus.innerHTML = '<span class="status-dot"></span><span>Desconectado</span>';
+    }
+
+    // Initial focus on username select
+    usernameSelect.focus();
   </script>
 </body>
 </html>
