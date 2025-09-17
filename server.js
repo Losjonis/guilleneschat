@@ -254,6 +254,6 @@ process.on('SIGINT', () => {
     process.exit(0);
 });
 
-server.listen(5000, () => {
-    console.log('Servidor de chat escuchando en el puerto 5000');
+server.listen(3000, () => {
+    console.log('Chat server listening to 3000 port...');
 });
