@@ -255,6 +255,13 @@
       align-items: flex-end;
     }
 
+    .input-group {
+      flex: 1;
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+    }
+
     .message-input {
       flex: 1;
       min-height: 44px;
@@ -274,6 +281,134 @@
       border-color: #6366f1;
       box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
       background: white;
+    }
+
+    .file-button {
+      width: 44px;
+      height: 44px;
+      background: #f3f4f6;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      color: #6b7280;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .file-button:hover {
+      background: #e5e7eb;
+      border-color: #d1d5db;
+      color: #374151;
+    }
+
+    .file-button svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .file-preview {
+      background: #f3f4f6;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      padding: 8px 12px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: #374151;
+    }
+
+    .file-preview button {
+      background: none;
+      border: none;
+      color: #ef4444;
+      cursor: pointer;
+      padding: 0;
+      margin-left: auto;
+    }
+
+    .file-message {
+      background: #ecfdf5;
+      border: 1px solid #d1fae5;
+      border-radius: 12px;
+      padding: 12px;
+      margin: 8px 0;
+    }
+
+    .file-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .file-icon {
+      width: 40px;
+      height: 40px;
+      background: #10b981;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .file-details h4 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: #065f46;
+    }
+
+    .file-details p {
+      margin: 2px 0 0 0;
+      font-size: 12px;
+      color: #047857;
+    }
+
+    .file-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #10b981;
+      color: white;
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .file-download:hover {
+      background: #059669;
+      transform: translateY(-1px);
+    }
+
+    .image-preview {
+      max-width: 100%;
+      max-height: 200px;
+      border-radius: 8px;
+      margin-top: 8px;
+    }
+
+    .upload-progress {
+      position: relative;
+      background: #f3f4f6;
+      border-radius: 8px;
+      overflow: hidden;
+      height: 4px;
+      margin-top: 8px;
+    }
+
+    .upload-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #6366f1, #8b5cf6);
+      transition: width 0.3s ease;
+      border-radius: 8px;
     }
 
     .send-button {
@@ -392,7 +527,7 @@
   <div class="chat-container">
     <div class="chat-header">
       <div class="chat-title">Los Guillenes Chat</div>
-      <div class="chat-subtitle">Rezando a Ruth desde 2023</div>
+      <div class="chat-subtitle">Conectados y listos para conversar</div>
       <div class="online-indicator">
         <div class="connection-status connected" id="connectionStatus">
           <span class="status-dot"></span>
@@ -430,13 +565,27 @@
       </div>
 
       <form class="message-form" id="messageForm">
-        <textarea 
-          id="messageInput" 
-          class="message-input" 
-          placeholder="Escribe tu mensaje..." 
-          rows="1"
-          required>
-        </textarea>
+        <div class="input-group">
+          <textarea 
+            id="messageInput" 
+            class="message-input" 
+            placeholder="Escribe tu mensaje..." 
+            rows="1"
+            required>
+          </textarea>
+          <input 
+            type="file" 
+            id="fileInput" 
+            class="file-input" 
+            accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt,.zip,.rar"
+            style="display: none;"
+          >
+          <button type="button" class="file-button" id="fileButton" title="Subir archivo">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+            </svg>
+          </button>
+        </div>
         <button type="submit" class="send-button">
           <svg viewBox="0 0 24 24" fill="currentColor">
             <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
@@ -446,7 +595,7 @@
     </div>
   </div>
 
-  <div class="version-info">GuillenChat V.2.0</div>
+  <div class="version-info">GuillenChat V.2.1</div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
@@ -455,6 +604,8 @@
     const messages = document.getElementById('messages');
     const messageForm = document.getElementById('messageForm');
     const messageInput = document.getElementById('messageInput');
+    const fileInput = document.getElementById('fileInput');
+    const fileButton = document.getElementById('fileButton');
     const usernameSelect = document.getElementById('username');
     const typingIndicator = document.getElementById('typingIndicator');
     const connectionStatus = document.getElementById('connectionStatus');
@@ -464,6 +615,7 @@
     let isTyping = false;
     let typingTimeout;
     let currentUsername = '';
+    let selectedFile = null;
 
     // Initialize socket connection when username is selected
     function initializeSocket() {
@@ -495,17 +647,33 @@
         scrollToBottom();
       });
 
+      // Handle file messages
+      socket.on('file message', function(fileData) {
+        // Hide empty state
+        emptyState.style.display = 'none';
+        
+        const fileMessageElement = createFileMessageElement(fileData);
+        messages.appendChild(fileMessageElement);
+        
+        // Trigger animation
+        setTimeout(() => {
+          fileMessageElement.style.opacity = '1';
+          fileMessageElement.style.transform = 'translateY(0) scale(1)';
+        }, 50);
+        
+        scrollToBottom();
+      });
+
       // Handle typing indicator
       socket.on('typing', function(typingMessage) {
         if (typingMessage) {
-          typingIndicator.innerHTML = `
-            <span>${typingMessage}</span>
-            <div class="typing-dots">
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
-          `;
+          typingIndicator.innerHTML = 
+            '<span>' + typingMessage + '</span>' +
+            '<div class="typing-dots">' +
+              '<span></span>' +
+              '<span></span>' +
+              '<span></span>' +
+            '</div>';
           typingIndicator.style.opacity = '1';
         } else {
           typingIndicator.style.opacity = '0';
@@ -536,17 +704,148 @@
       this.style.height = Math.min(this.scrollHeight, 120) + 'px';
     });
 
+    // Handle file button click
+    fileButton.addEventListener('click', function() {
+      fileInput.click();
+    });
+
+    // Handle file selection
+    fileInput.addEventListener('change', function() {
+      const file = this.files[0];
+      if (file) {
+        selectedFile = file;
+        showFilePreview(file);
+      }
+    });
+
+    // Show file preview
+    function showFilePreview(file) {
+      // Remove existing preview
+      const existingPreview = document.querySelector('.file-preview');
+      if (existingPreview) {
+        existingPreview.remove();
+      }
+
+      const preview = document.createElement('div');
+      preview.className = 'file-preview';
+      preview.innerHTML = 
+        '<svg viewBox="0 0 24 24" fill="currentColor" style="width: 16px; height: 16px;">' +
+          '<path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>' +
+        '</svg>' +
+        '<span>' + file.name + ' (' + Math.round(file.size / 1024) + 'KB)</span>' +
+        '<button type="button" onclick="clearFileSelection()">×</button>';
+      
+      messageForm.insertBefore(preview, messageForm.firstChild);
+    }
+
+    // Clear file selection
+    function clearFileSelection() {
+      selectedFile = null;
+      fileInput.value = '';
+      const preview = document.querySelector('.file-preview');
+      if (preview) {
+        preview.remove();
+      }
+    }
+    window.clearFileSelection = clearFileSelection;
+
     // Handle form submission
-    messageForm.addEventListener('submit', function(e) {
+    messageForm.addEventListener('submit', async function(e) {
       e.preventDefault();
-      if (messageInput.value.trim() && usernameSelect.value && socket) {
-        const message = `${usernameSelect.value}: ${messageInput.value.trim()}`;
+      
+      if (!usernameSelect.value || !socket) return;
+
+      // Handle file upload
+      if (selectedFile) {
+        await uploadFile(selectedFile);
+        clearFileSelection();
+        return;
+      }
+
+      // Handle text message
+      if (messageInput.value.trim()) {
+        const message = usernameSelect.value + ': ' + messageInput.value.trim();
         socket.emit('chat message', message);
         messageInput.value = '';
         messageInput.style.height = 'auto';
         stopTyping();
       }
     });
+
+    // Upload file function
+    async function uploadFile(file) {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      // Show upload progress
+      const progressElement = showUploadProgress();
+
+      try {
+        const response = await fetch('/upload', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          
+          // Send file message via socket
+          const fileData = {
+            username: usernameSelect.value,
+            originalname: result.file.originalname,
+            filename: result.file.filename,
+            size: result.file.size,
+            mimetype: result.file.mimetype,
+            url: result.url,
+            timestamp: new Date().toISOString()
+          };
+
+          socket.emit('file message', fileData);
+          
+        } else {
+          const error = await response.json();
+          alert('Error al subir archivo: ' + error.error);
+        }
+      } catch (error) {
+        console.error('Error uploading file:', error);
+        alert('Error al subir archivo');
+      } finally {
+        // Remove progress indicator
+        if (progressElement) {
+          progressElement.remove();
+        }
+      }
+    }
+
+    // Show upload progress
+    function showUploadProgress() {
+      const progressElement = document.createElement('div');
+      progressElement.className = 'file-preview';
+      progressElement.innerHTML = 
+        '<svg viewBox="0 0 24 24" fill="currentColor" style="width: 16px; height: 16px;">' +
+          '<path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>' +
+        '</svg>' +
+        '<span>Subiendo archivo...</span>' +
+        '<div class="upload-progress">' +
+          '<div class="upload-progress-bar" style="width: 0%"></div>' +
+        '</div>';
+      
+      messageForm.insertBefore(progressElement, messageForm.firstChild);
+      
+      // Simulate progress
+      const progressBar = progressElement.querySelector('.upload-progress-bar');
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += Math.random() * 20;
+        if (progress >= 90) {
+          progress = 90;
+          clearInterval(interval);
+        }
+        progressBar.style.width = progress + '%';
+      }, 100);
+
+      return progressElement;
+    }
 
     // Handle typing
     messageInput.addEventListener('input', function() {
@@ -602,21 +901,100 @@
 
     // Create message element
     function createMessageElement(messageText) {
-      const [author, ...textParts] = messageText.split(': ');
-      const text = textParts.join(': ');
+      const parts = messageText.split(': ');
+      const author = parts[0];
+      const text = parts.slice(1).join(': ');
       
       const messageDiv = document.createElement('div');
       messageDiv.className = 'message';
       
-      messageDiv.innerHTML = `
-        <div class="message-bubble">
-          <div class="message-author">${author}</div>
-          <div class="message-text">${text}</div>
-          <div class="message-time">${formatTime()}</div>
-        </div>
-      `;
+      messageDiv.innerHTML = 
+        '<div class="message-bubble">' +
+          '<div class="message-author">' + author + '</div>' +
+          '<div class="message-text">' + text + '</div>' +
+          '<div class="message-time">' + formatTime() + '</div>' +
+        '</div>';
       
       return messageDiv;
+    }
+
+    // Create file message element
+    function createFileMessageElement(fileData) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'message';
+      
+      const isImage = fileData.mimetype.startsWith('image/');
+      const fileIcon = getFileIcon(fileData.mimetype);
+      
+      let imagePreview = '';
+      if (isImage) {
+        imagePreview = '<img src="' + fileData.url + '" alt="' + fileData.originalname + '" class="image-preview" loading="lazy">';
+      }
+      
+      messageDiv.innerHTML = 
+        '<div class="message-bubble">' +
+          '<div class="message-author">' + fileData.username + '</div>' +
+          '<div class="file-message">' +
+            '<div class="file-info">' +
+              '<div class="file-icon">' +
+                fileIcon +
+              '</div>' +
+              '<div class="file-details">' +
+                '<h4>' + fileData.originalname + '</h4>' +
+                '<p>' + Math.round(fileData.size / 1024) + 'KB • ' + getFileType(fileData.mimetype) + '</p>' +
+              '</div>' +
+            '</div>' +
+            '<a href="' + fileData.url + '" target="_blank" class="file-download" download="' + fileData.originalname + '">' +
+              '<svg viewBox="0 0 24 24" fill="currentColor" style="width: 14px; height: 14px;">' +
+                '<path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"/>' +
+              '</svg>' +
+              'Descargar' +
+            '</a>' +
+            imagePreview +
+          '</div>' +
+          '<div class="message-time">' + formatTime() + '</div>' +
+        '</div>';
+      
+      return messageDiv;
+    }
+
+    // Get file icon based on mime type
+    function getFileIcon(mimetype) {
+      if (mimetype.startsWith('image/')) {
+        return '<svg viewBox="0 0 24 24" fill="currentColor" style="width: 20px; height: 20px;">' +
+          '<path d="M8.5,13.5L11,16.5L14.5,12L19,18H5M21,19V5C21,3.89 20.1,3 19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19Z"/>' +
+          '</svg>';
+      } else if (mimetype.startsWith('video/')) {
+        return '<svg viewBox="0 0 24 24" fill="currentColor" style="width: 20px; height: 20px;">' +
+          '<path d="M17,10.5V7A1,1 0 0,0 16,6H4A1,1 0 0,0 3,7V17A1,1 0 0,0 4,18H16A1,1 0 0,0 17,17V13.5L21,17.5V6.5L17,10.5Z"/>' +
+          '</svg>';
+      } else if (mimetype.startsWith('audio/')) {
+        return '<svg viewBox="0 0 24 24" fill="currentColor" style="width: 20px; height: 20px;">' +
+          '<path d="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.85 14,18.71V20.77C18,19.86 21,16.28 21,12C21,7.72 18,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.76 16.5,12M3,9V15H7L12,20V4L7,9H3Z"/>' +
+          '</svg>';
+      } else if (mimetype.includes('pdf')) {
+        return '<svg viewBox="0 0 24 24" fill="currentColor" style="width: 20px; height: 20px;">' +
+          '<path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>' +
+          '</svg>';
+      } else {
+        return '<svg viewBox="0 0 24 24" fill="currentColor" style="width: 20px; height: 20px;">' +
+          '<path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>' +
+          '</svg>';
+      }
+    }
+
+    // Get readable file type
+    function getFileType(mimetype) {
+      if (mimetype.includes('image/')) return 'Imagen';
+      if (mimetype.includes('video/')) return 'Video';
+      if (mimetype.includes('audio/')) return 'Audio';
+      if (mimetype.includes('pdf')) return 'PDF';
+      if (mimetype.includes('msword')) return 'Word';
+      if (mimetype.includes('wordprocessingml')) return 'Word';
+      if (mimetype.includes('text/plain')) return 'Texto';
+      if (mimetype.includes('zip')) return 'ZIP';
+      if (mimetype.includes('rar')) return 'RAR';
+      return 'Archivo';
     }
 
     // Focus message input when username is selected
@@ -628,60 +1006,30 @@
       }
     });
 
-    // Handle new messages (moved from inside initializeSocket)
-    function handleChatMessage(msg) {
-      // Hide empty state
-      emptyState.style.display = 'none';
-      
-      const messageElement = createMessageElement(msg);
-      messages.appendChild(messageElement);
-      
-      // Trigger animation
-      setTimeout(() => {
-        messageElement.style.opacity = '1';
-        messageElement.style.transform = 'translateY(0) scale(1)';
-      }, 50);
-      
-      scrollToBottom();
-    }
+    // Drag and drop functionality
+    messagesContainer.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      this.style.backgroundColor = 'rgba(99, 102, 241, 0.1)';
+    });
 
-    // Handle typing indicator (moved from inside initializeSocket)
-    function handleTyping(typingMessage) {
-      if (typingMessage) {
-        typingIndicator.innerHTML = `
-          <span>${typingMessage}</span>
-          <div class="typing-dots">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-        `;
-        typingIndicator.style.opacity = '1';
-      } else {
-        typingIndicator.style.opacity = '0';
-        setTimeout(() => {
-          if (typingIndicator.style.opacity === '0') {
-            typingIndicator.innerHTML = '';
-          }
-        }, 200);
+    messagesContainer.addEventListener('dragleave', function(e) {
+      e.preventDefault();
+      this.style.backgroundColor = '';
+    });
+
+    messagesContainer.addEventListener('drop', function(e) {
+      e.preventDefault();
+      this.style.backgroundColor = '';
+      
+      const files = e.dataTransfer.files;
+      if (files.length > 0 && usernameSelect.value) {
+        selectedFile = files[0];
+        showFilePreview(files[0]);
       }
-      scrollToBottom();
-    }
-
-    // Handle connection status (moved from inside initializeSocket)  
-    function handleConnect() {
-      connectionStatus.className = 'connection-status connected';
-      connectionStatus.innerHTML = '<span class="status-dot"></span><span>En línea</span>';
-    }
-
-    function handleDisconnect() {
-      connectionStatus.className = 'connection-status disconnected';  
-      connectionStatus.innerHTML = '<span class="status-dot"></span><span>Desconectado</span>';
-    }
+    });
 
     // Initial focus on username select
     usernameSelect.focus();
   </script>
 </body>
 </html>
-
