@@ -4,6 +4,7 @@ const socketIo = require('socket.io');
 const fs = require('fs');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
+const multer = require('multer');
 
 const app = express();
 const server = http.createServer(app);
@@ -16,6 +17,43 @@ const typingUsers = new Set(); // Conjunto para rastrear usuarios escribiendo
 // Generar un ID de sesión único al iniciar el servidor
 const sessionId = uuidv4();
 console.log(`ID de sesión generado: ${sessionId}`);
+
+// Configuración para subida de archivos
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        const uploadDir = 'uploads';
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+        cb(null, uploadDir);
+    },
+    filename: function (req, file, cb) {
+        // Generar nombre único para el archivo
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const fileExtension = path.extname(file.originalname);
+        const fileName = file.originalname.replace(fileExtension, '') + '-' + uniqueSuffix + fileExtension;
+        cb(null, fileName);
+    }
+});
+
+const upload = multer({
+    storage: storage,
+    limits: {
+        fileSize: 10 * 1024 * 1024 // 10MB límite
+    },
+    fileFilter: function (req, file, cb) {
+        // Lista de tipos de archivos permitidos
+        const allowedTypes = /jpeg|jpg|png|gif|pdf|doc|docx|txt|zip|rar|mp4|mp3|wav/;
+        const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+        const mimetype = allowedTypes.test(file.mimetype);
+
+        if (mimetype && extname) {
+            return cb(null, true);
+        } else {
+            cb(new Error('Tipo de archivo no permitido'));
+        }
+    }
+});
 
 function loadMessages() {
     try {
@@ -56,6 +94,9 @@ function clearMessages(sessionId) {
 // Servir archivos estáticos desde la carpeta 'public'
 app.use(express.static('public'));
 
+// Servir archivos subidos desde la carpeta 'uploads'
+app.use('/uploads', express.static('uploads'));
+
 // Analizar el cuerpo de las solicitudes POST como JSON
 app.use(express.json());
 
@@ -75,7 +116,7 @@ app.post('/login', (req, res) => {
 
     if (password === 'habibi') { // Cambia 'habibi' por tu contraseña real
         // Si la contraseña es correcta, redirecciona al chat
-        res.redirect('/chat');
+        res.redirect('./chat');
     } else {
         // Si la contraseña es incorrecta, mostrar mensaje de error
         res.send('Acceso denegado');
@@ -85,6 +126,34 @@ app.post('/login', (req, res) => {
 // Ruta para servir el archivo chat.html
 app.get('/chat', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'chat.html'));
+});
+
+// Ruta para subir archivos
+app.post('/upload', upload.single('file'), (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No se seleccionó ningún archivo' });
+        }
+
+        const fileInfo = {
+            filename: req.file.filename,
+            originalname: req.file.originalname,
+            size: req.file.size,
+            mimetype: req.file.mimetype,
+            path: req.file.path
+        };
+
+        console.log('Archivo subido:', fileInfo);
+
+        res.json({
+            success: true,
+            file: fileInfo,
+            url: `/uploads/${req.file.filename}`
+        });
+    } catch (error) {
+        console.error('Error al subir archivo:', error);
+        res.status(500).json({ error: 'Error al subir el archivo' });
+    }
 });
 
 io.on('connection', (socket) => {
@@ -110,6 +179,14 @@ io.on('connection', (socket) => {
         console.log(`Mensaje recibido de ${clientIP} - ${msg}`);
         io.emit('chat message', msg); // Emitir el mensaje a todos los clientes
         saveMessage(msg);
+    });
+
+    // Manejar mensajes de archivos
+    socket.on('file message', (fileData) => {
+        console.log(`Archivo compartido de ${clientIP} - ${fileData.originalname}`);
+        const fileMessage = `${fileData.username}: [ARCHIVO] ${fileData.originalname} (${Math.round(fileData.size / 1024)}KB) - ${fileData.url}`;
+        io.emit('file message', fileData); // Emitir la información del archivo a todos los clientes
+        saveMessage(fileMessage); // Guardar en el log
     });
 
     // Manejar la señal 'typing'
@@ -177,6 +254,6 @@ process.on('SIGINT', () => {
     process.exit(0);
 });
 
-server.listen(3000, () => {
-    console.log('Servidor de chat escuchando en el puerto 3000');
+server.listen(5000, () => {
+    console.log('Servidor de chat escuchando en el puerto 5000');
 });
