@@ -10,7 +10,7 @@
 
 Guillenes Chat is a local network chat application primarily created to facilitate communication with your classmates or coworkers within the same local network. The app allows real-time messaging without the need for an internet connection, making it ideal for classrooms or workplaces.
 
-The project is currently under development 🔧, with more features and improvements planned.
+The project is currently under development, with more features and improvements planned.
 
 ---
 
